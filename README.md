@@ -15,12 +15,8 @@ Antes de iniciar, certifique-se de ter instalado em sua máquina local:
 
 ### Clonar o repositório
 ```
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/thuanyvermelho/projeto_aws_etl_glue_athena.git
-git push -u origin main
+git clone https://github.com/thuanyvermelho/projeto_aws_etl_glue_athena.git
+cd projeto_aws_etl_glue_athena
 ```
 
 ### Executar o ambiente local com Docker

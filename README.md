@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-
-
-
-
-
-
-# projeto_aws_etl_glue_athena
-=======
 # AWS - Projeto de Engenharia de Dados: ETL da HealthTech utilizando S3, AWS Glue, Amazon Athena e Amazon QuickSight
 
 Este repositório contém o código e a documentação para o projeto de ETL (Extract, Transform, Load) dos dados de uma empresa HealthTech. O projeto utiliza as ferramentas da AWS para a execução e gerenciamento dos recursos de dados.
@@ -109,5 +100,3 @@ Os dados são disponibilizados para visualizações e criação de dashboards no
  - `Dockerfile:` Arquivo Docker para configurar o ambiente local.
  - `dicionario_dados.md:` Dicionário dos dados tratados.
  - `README.md:` Este arquivo de documentação.
-
->>>>>>> f819c56 (Adicionando projeto ETL com Docker e documentação)

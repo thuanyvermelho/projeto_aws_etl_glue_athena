@@ -1,6 +1,6 @@
 # AWS - Projeto de Engenharia de Dados: ETL da HealthTech utilizando S3, AWS Glue, Amazon Athena e Amazon QuickSight
 
-Este repositório contém o código e a documentação para o projeto de ETL (Extract, Transform, Load) dos dados de uma empresa HealthTech. O projeto utiliza as ferramentas da AWS para a execução e gerenciamento dos recursos de dados.
+Este repositório contém o código e a documentação para o projeto de ETL (Extract, Transform, Load) dos dados de uma empresa HealthTech. O projeto utiliza as ferramentas da AWS para a execução e gerenciamento dos recursos de dados. Os dados utilizados são ficticios.
 
 ### Pré-requisitos
 
@@ -10,6 +10,7 @@ Antes de iniciar, certifique-se de ter instalado em sua máquina local:
 * Git
 * Docker
 * Conta na AWS (Amazon Web Services)
+
 
 ## Clone o repositório e configure as dependências
 
@@ -26,7 +27,7 @@ Este projeto utiliza Docker para configurar um ambiente local com Spark e Jupyte
 FROM jupyter/pyspark-notebook:latest
 
 # Copie os arquivos do projeto para o contêiner
-COPY data.zip /home/jovyan/work/data.zip
+COPY data /home/jovyan/work/data
 COPY src /home/jovyan/work/src
 COPY test /home/jovyan/work/test
 
@@ -34,24 +35,20 @@ COPY test /home/jovyan/work/test
 USER root
 RUN chown -R jovyan:users /home/jovyan/work
 
-# Descompacte o arquivo data.zip
-RUN unzip /home/jovyan/work/data.zip -d /home/jovyan/work/data
-
-# Remova o arquivo zip após a descompactação
-RUN rm /home/jovyan/work/data.zip
-
 # Exponha a porta usada pelo Jupyter
 EXPOSE 8888
 
 # Comando para iniciar o Jupyter
 CMD ["start-notebook.sh"]
-
 ```
+
 ## Construir e executar o contêiner Docker
+
 ```
 docker build -t projeto_aws_etl_healthtech .
 docker run -p 8888:8888 projeto_aws_etl_healthtech
 ```
+
 ### Acesse o Jupyter Notebook
 Abra o navegador e vá para http://localhost:8888 e use o token gerado para acessar o Jupyter.
 
@@ -65,7 +62,17 @@ A arquitetura do projeto foi construída para ser escalável e integrar os dados
 **Amazon Athena:** Consulta os dados transformados.<br>
 **Amazon QuickSight:** Criação de dashboards interativos e relatórios.<br>
 
-## Estrutura do Projeto e Fluxo do ETL
+## Estrutura do Projeto 
+
+ - `src/:` Contém os scripts do job ETL e da função lambda.
+    - `Consultas_athena`: Contém as queries efetuadas no athena.
+ -  `data/:` Contém os 3 arquivos que foram reduzidos em mais de 50% para fazer os testes locais e salar neste repositório.
+ - `tests/:` Contém o script de teste local no Jupyter Notebook.
+ - `Dockerfile:` Arquivo Docker para configurar o ambiente local.
+ - `dicionario_dados.md:` Dicionário dos dados tratados.
+ - `README.md:` Este arquivo de documentação.
+
+## Fluxo do ETL
 
 ### Carregamento dos Dados Brutos no S3:
 
@@ -73,26 +80,18 @@ Os arquivos `dados_cadastro_2.csv`, `dados_cadastro_3.json`, e `dados_cadastro_1
 
 ### Execução da Lambda:
 
-Uma função Lambda é acionada sempre que novos arquivos são carregados no S3 para:
+Uma função Lambda é acionada sempre que os 3 arquivos são carregados no S3 para onde irá iniciar o Glue Job que lê os dados catalogados.<br>
 
-1 - Iniciar o Glue Job que lê os dados catalogados.<br>
-2 - Transformar e unificar os dados das três fontes.<br>
-3 - Gravar os dados transformados em formato Parquet no bucket `data-client-processed/output/dados_tratados`, particionados por convenio.<br>
+
+### Execução do Glue Job:
+
+* Transformar e unifica os dados das três fontes.<br>
+* Gravar os dados transformados em arquivo unico em formato Parquet no bucket `data-client-processed/output/dados_tratados`, particionados por convenio.<br>
 
 ### Execução do Glue Crawler:
 
-O Glue Crawler para roda apenas uma vez e ele atualizará o catálogo quando novos dados forem adicionados ou quando houver mudanças necessária
+O Glue Crawler atualizará o catálogo quando novos dados forem adicionados ou quando houver mudanças necessárias.
 
-Consultas e Visualizações:
+### Consultas e Visualizações:
 Os dados transformados são consultáveis no Amazon Athena `src\consultas_athena\queries.sql.`
 Os dados são disponibilizados para visualizações e criação de dashboards no Amazon QuickSight.
-
-## Estrutura do Projeto 
-
- - `src/:` Contém os scripts do job ETL e da função lambda.
-    - `Consultas_athena`: Contém as queries efetuadas no athena.
- -  `data.zip/:` Contém os 3 arquivos zipados.
- - `tests/:` Contém o script de teste local no Jupyter Notebook.
- - `Dockerfile:` Arquivo Docker para configurar o ambiente local.
- - `dicionario_dados.md:` Dicionário dos dados tratados.
- - `README.md:` Este arquivo de documentação.
